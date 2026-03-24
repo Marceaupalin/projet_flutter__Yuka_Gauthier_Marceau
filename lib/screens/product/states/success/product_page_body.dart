@@ -9,6 +9,7 @@ import 'package:formation_flutter/screens/product/states/success/tabs/product_ta
 import 'package:formation_flutter/screens/product/states/success/tabs/product_tab2.dart';
 import 'package:formation_flutter/screens/product/states/success/tabs/product_tab3.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductPageBody extends StatefulWidget {
   const ProductPageBody({super.key});
@@ -29,17 +30,52 @@ class _ProductPageBodyState extends State<ProductPageBody> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final fetcherState = context.read<ProductFetcher>().state as ProductFetcherSuccess;
 
     return Provider<Product>(
-      create: (_) =>
-          (context.read<ProductFetcher>().state as ProductFetcherSuccess)
-              .product,
+      create: (_) => fetcherState.product,
       child: Column(
         children: [
           Expanded(
             child: CustomScrollView(
               slivers: <Widget>[
                 ProductPageHeader(),
+                if (fetcherState.recallData != null)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                      child: Material(
+                        color: Colors.red.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8.0),
+                          onTap: () {
+                            context.push('/recall', extra: fetcherState.recallData);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.warning_amber_rounded, color: Colors.red),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'Ce produit fait l\'objet d\'un rappel. Appuyez ici pour plus d\'informations.',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontFamily: 'Avenir',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 SliverPadding(
                   padding: EdgeInsetsDirectional.only(top: 10.0),
                   sliver: SliverFillRemaining(

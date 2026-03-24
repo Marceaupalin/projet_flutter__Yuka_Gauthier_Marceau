@@ -4,7 +4,7 @@ import 'dart:ui';
 class AppColors {
   const AppColors._();
 
-  static const Color blue = Color(0xFF080040);
+  static const Color blue = Color(0xFF1A144C);
   static const Color blueDark = Color(0xFF050027);
   static const Color yellow = Color(0xFFFBAF02);
   static const Color blueLight = Color(0xFF41C7DF);
@@ -12,6 +12,7 @@ class AppColors {
   static const Color grey2 = Color(0xFFB8BBC6);
   static const Color grey3 = Color(0xFF6A6A6A);
   static const Color white = Color(0xFFFFFFFF);
+  static const Color appBackground = Color(0xFFF9F9F9);
   static const Color black = Color(0xFF000000);
   static const Color nutrientLevelLow = Color(0xFF63993F);
   static const Color nutrientLevelModerate = Color(0xFF997B3F);

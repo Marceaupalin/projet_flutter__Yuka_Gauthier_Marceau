@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formation_flutter/api/open_food_facts_api.dart';
+import 'package:formation_flutter/core/services/pocketbase_service.dart';
 import 'package:formation_flutter/model/product.dart';
 
 class ProductFetcher extends ChangeNotifier {
@@ -18,7 +19,16 @@ class ProductFetcher extends ChangeNotifier {
 
     try {
       Product product = await OpenFoodFactsAPI().getProduct(_barcode);
-      _state = ProductFetcherSuccess(product);
+      
+      Map<String, dynamic>? recallData;
+      try {
+        final recalls = await PocketBaseService().getRecalls(_barcode);
+        if (recalls.isNotEmpty) {
+          recallData = recalls.first;
+        }
+      } catch (_) {}
+
+      _state = ProductFetcherSuccess(product, recallData: recallData);
     } catch (error) {
       _state = ProductFetcherError(error);
     } finally {
@@ -34,9 +44,10 @@ sealed class ProductFetcherState {}
 class ProductFetcherLoading extends ProductFetcherState {}
 
 class ProductFetcherSuccess extends ProductFetcherState {
-  ProductFetcherSuccess(this.product);
+  ProductFetcherSuccess(this.product, {this.recallData});
 
   final Product product;
+  final Map<String, dynamic>? recallData;
 }
 
 class ProductFetcherError extends ProductFetcherState {
