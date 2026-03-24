@@ -4,7 +4,6 @@ import 'package:formation_flutter/res/app_colors.dart';
 import 'package:formation_flutter/res/app_icons.dart';
 import 'package:formation_flutter/screens/homepage/homepage_empty.dart';
 import 'package:formation_flutter/screens/homepage/product_list_item.dart';
-import 'package:formation_flutter/api/open_food_facts_api.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
@@ -94,50 +93,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: _buildBody(),
-      floatingActionButton: (_history == null || _history!.isEmpty) && !_isLoading
-          ? FloatingActionButton.extended(
-              onPressed: _seedSampleData,
-              label: const Text('Générer un exemple'),
-              icon: const Icon(Icons.auto_awesome),
-              backgroundColor: AppColors.yellow,
-              foregroundColor: AppColors.blue,
-            )
-          : null,
     );
-  }
-
-  Future<void> _seedSampleData() async {
-    setState(() => _isLoading = true);
-    try {
-      final pb = PocketBaseService();
-      final api = OpenFoodFactsAPI();
-      
-      final barcodes = ["3017620422003", "3274080005003", "7622210449283"];
-      
-      for (final barcode in barcodes) {
-        try {
-          final product = await api.getProduct(barcode);
-          await pb.addToHistory(
-            barcode, 
-            product.name, 
-            product.brands?.join(', '), 
-            product.picture, 
-            product.nutriScore?.name
-          );
-          if (barcode != "3274080005003") {
-            await pb.addToFavorites(
-              barcode, 
-              product.name, 
-              product.brands?.join(', '), 
-              product.picture, 
-              product.nutriScore?.name
-            );
-          }
-        } catch (_) {}
-      }
-    } finally {
-      await _loadHistory();
-    }
   }
 
   Widget _buildBody() {

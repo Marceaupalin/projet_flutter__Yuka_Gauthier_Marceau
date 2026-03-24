@@ -74,6 +74,15 @@ class PocketBaseService extends ChangeNotifier {
   String? get userId => pb.authStore.record?.id;
 
   Future<void> addToHistory(String barcode, String? name, String? brand, String? imageUrl, String? nutriScore) async {
+    final existing = await pb.collection('history').getFullList(
+      filter: 'user = "$userId" && barcode = "$barcode"',
+    );
+
+    // Supprime l'ancien enregistrement s'il existe pour qu'il remonte en haut de la pile (no duplicate)
+    for (final record in existing) {
+      await pb.collection('history').delete(record.id);
+    }
+
     await pb.collection('history').create(body: {
       'user': userId,
       'barcode': barcode,
